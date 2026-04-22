@@ -235,103 +235,327 @@ export default function Hero() {
 
 function Cake({
   lit,
-  age,
   onTapCandle,
 }: {
   lit: boolean[];
   age: number;
   onTapCandle: (i: number) => void;
 }) {
-  const candlePositions = lit.map((_, i) => {
-    const spread = 180;
-    const count = lit.length;
-    const x = 160 + (i - (count - 1) / 2) * (spread / (count - 1));
-    return x;
-  });
+  // candles sit on the top tier surface; SVG viewBox is 360x320
+  const CANDLE_COLORS = ["#2844c2", "#b02a25", "#e8b339", "#b02a25", "#2844c2"];
+  const candleX = lit.map((_, i) => 138 + i * 21);
+  const WICK_TOP = 38;
+  const CANDLE_TOP = 46;
+  const CANDLE_BOTTOM = 92;
+  const VB_H = 320;
+  const VB_W = 360;
 
   return (
-    <div className="relative mx-auto aspect-[5/4] w-full max-w-[520px]">
-      <svg viewBox="0 0 320 256" className="h-full w-full">
-        {/* plate shadow */}
-        <ellipse cx="160" cy="240" rx="120" ry="6" fill="#171210" opacity="0.18" />
-        {/* plate */}
-        <ellipse cx="160" cy="232" rx="130" ry="10" fill="#e9dcbd" stroke="#171210" strokeWidth="2" />
-
-        {/* bottom tier */}
-        <g>
-          <rect x="50" y="170" width="220" height="64" rx="6" fill="#f4a48a" stroke="#171210" strokeWidth="2.5" />
-          {/* drip */}
-          <path d="M50 180 Q 70 200 90 180 Q 110 205 130 180 Q 150 200 170 180 Q 190 205 210 180 Q 230 200 250 180 Q 270 205 270 180 L 270 176 L 50 176 Z" fill="#b02a25" stroke="#171210" strokeWidth="2.5" strokeLinejoin="round" />
-          {/* halftone */}
-          <rect x="50" y="200" width="220" height="34" fill="url(#dots)" opacity="0.25" />
-        </g>
-
-        {/* middle tier */}
-        <g>
-          <rect x="90" y="120" width="140" height="54" rx="5" fill="#f2e7cf" stroke="#171210" strokeWidth="2.5" />
-          <path d="M90 128 Q 110 145 130 128 Q 150 148 170 128 Q 190 145 210 128 Q 230 148 230 128 L 230 124 L 90 124 Z" fill="#2844c2" stroke="#171210" strokeWidth="2.5" strokeLinejoin="round" />
-        </g>
-
-        {/* top tier */}
-        <g>
-          <rect x="120" y="80" width="80" height="42" rx="4" fill="#e8b339" stroke="#171210" strokeWidth="2.5" />
-          <path d="M120 86 Q 135 100 150 86 Q 165 102 180 86 Q 195 100 200 86 L 200 82 L 120 82 Z" fill="#b02a25" stroke="#171210" strokeWidth="2.5" strokeLinejoin="round" />
-        </g>
-
-        {/* age 20 on cake */}
-        <text x="160" y="154" textAnchor="middle" fontSize="22" fontWeight="900" fill="#171210" fontFamily="var(--font-display)">
-          {age}
-        </text>
-
-        {/* dots pattern */}
+    <div className="relative mx-auto aspect-[9/8] w-full max-w-[560px]">
+      <svg viewBox={`0 0 ${VB_W} ${VB_H}`} className="h-full w-full">
         <defs>
-          <pattern id="dots" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse">
-            <circle cx="2" cy="2" r="1.1" fill="#171210" />
+          <pattern id="zellij" x="0" y="0" width="16" height="16" patternUnits="userSpaceOnUse">
+            <path
+              d="M8 0 L16 8 L8 16 L0 8 Z"
+              fill="none"
+              stroke="#171210"
+              strokeWidth="0.7"
+              opacity="0.55"
+            />
+            <circle cx="8" cy="8" r="1" fill="#171210" opacity="0.35" />
           </pattern>
+          <pattern id="pearls" x="0" y="0" width="9" height="6" patternUnits="userSpaceOnUse">
+            <circle cx="4.5" cy="3" r="2.3" fill="#f2e7cf" stroke="#171210" strokeWidth="1" />
+          </pattern>
+          <pattern id="pearlsDark" x="0" y="0" width="9" height="6" patternUnits="userSpaceOnUse">
+            <circle cx="4.5" cy="3" r="2.3" fill="#e8b339" stroke="#171210" strokeWidth="1" />
+          </pattern>
+          <pattern id="sprinkles" x="0" y="0" width="28" height="28" patternUnits="userSpaceOnUse">
+            <rect x="4" y="3" width="5" height="1.8" fill="#b02a25" transform="rotate(30 6.5 4)" />
+            <rect x="16" y="10" width="5" height="1.8" fill="#2844c2" transform="rotate(-45 18.5 11)" />
+            <rect x="7" y="18" width="5" height="1.8" fill="#e8b339" transform="rotate(60 9.5 19)" />
+            <rect x="20" y="21" width="5" height="1.8" fill="#4a6a3a" transform="rotate(15 22.5 22)" />
+            <circle cx="22" cy="6" r="1.1" fill="#f2e7cf" />
+            <circle cx="3" cy="13" r="1.1" fill="#f2e7cf" />
+          </pattern>
+          <radialGradient id="goldShine" cx="40%" cy="30%" r="70%">
+            <stop offset="0%" stopColor="#fff2c2" />
+            <stop offset="55%" stopColor="#e8b339" />
+            <stop offset="100%" stopColor="#b88318" />
+          </radialGradient>
         </defs>
 
-        {/* candles */}
-        {candlePositions.map((x, i) => (
-          <g key={i} transform={`translate(${x - 160}, 0)`}>
+        {/* === GROUND SHADOW === */}
+        <ellipse cx="180" cy="310" rx="140" ry="5" fill="#171210" opacity="0.2" />
+
+        {/* === CAKE STAND === */}
+        <g>
+          {/* base foot */}
+          <ellipse cx="180" cy="302" rx="58" ry="7" fill="#e9dcbd" stroke="#171210" strokeWidth="2.2" />
+          <ellipse cx="180" cy="299" rx="52" ry="4" fill="#f2e7cf" opacity="0.85" />
+          {/* stem (urn-shape) */}
+          <path
+            d="M 167 286
+               L 167 290
+               C 158 292 158 296 167 298
+               L 193 298
+               C 202 296 202 292 193 290
+               L 193 286 Z"
+            fill="#f2e7cf"
+            stroke="#171210"
+            strokeWidth="2.2"
+            strokeLinejoin="round"
+          />
+          <line x1="170" y1="290" x2="170" y2="298" stroke="#171210" strokeWidth="0.8" opacity="0.5" />
+          <line x1="190" y1="290" x2="190" y2="298" stroke="#171210" strokeWidth="0.8" opacity="0.5" />
+          {/* plate (top of stand) */}
+          <ellipse cx="180" cy="286" rx="140" ry="10" fill="#f2e7cf" stroke="#171210" strokeWidth="2.5" />
+          <ellipse cx="180" cy="283" rx="132" ry="4" fill="#e9dcbd" opacity="0.55" />
+          {/* gold rim on plate */}
+          <path
+            d="M 40 286 A 140 10 0 0 0 320 286"
+            stroke="#e8b339"
+            strokeWidth="1.2"
+            fill="none"
+            opacity="0.8"
+          />
+        </g>
+
+        {/* === BOTTOM TIER — peach body with oxblood drip === */}
+        <g>
+          <rect
+            x="66"
+            y="215"
+            width="228"
+            height="66"
+            rx="3"
+            fill="#f4a48a"
+            stroke="#171210"
+            strokeWidth="2.5"
+          />
+          {/* subtle interior gradient — sprinkles sit on cake face */}
+          <rect x="66" y="215" width="228" height="66" fill="url(#sprinkles)" opacity="0.55" />
+          {/* shading at base */}
+          <rect x="66" y="260" width="228" height="21" fill="#171210" opacity="0.08" />
+          {/* scalloped drip body */}
+          <path
+            d="M 66 200
+               L 294 200
+               L 294 214
+               Q 282.5 226 271 214
+               Q 259.5 226 248 214
+               Q 236.5 226 225 214
+               Q 213.5 226 202 214
+               Q 190.5 226 179 214
+               Q 167.5 226 156 214
+               Q 144.5 226 133 214
+               Q 121.5 226 110 214
+               Q 98.5 226 87 214
+               Q 75.5 226 66 214 Z"
+            fill="#b02a25"
+            stroke="#171210"
+            strokeWidth="2.5"
+            strokeLinejoin="round"
+          />
+          {/* hanging drip tears (longer drops) */}
+          <path d="M 102 214 Q 96 228 102 238 Q 108 228 102 214 Z" fill="#b02a25" stroke="#171210" strokeWidth="2" strokeLinejoin="round" />
+          <path d="M 179 214 Q 172 232 179 244 Q 186 232 179 214 Z" fill="#b02a25" stroke="#171210" strokeWidth="2" strokeLinejoin="round" />
+          <path d="M 248 214 Q 242 228 248 240 Q 254 228 248 214 Z" fill="#b02a25" stroke="#171210" strokeWidth="2" strokeLinejoin="round" />
+          {/* glaze highlight */}
+          <path d="M 75 203 L 80 210 M 145 203 L 150 211 M 215 203 L 220 210 M 280 203 L 285 209" stroke="#f4a48a" strokeWidth="1.5" opacity="0.7" strokeLinecap="round" />
+          {/* pearl border at bottom */}
+          <rect x="66" y="277" width="228" height="5" fill="url(#pearls)" opacity="0.95" />
+        </g>
+
+        {/* === MIDDLE TIER — cream body, zellij pattern, cobalt drip, gold L monogram === */}
+        <g>
+          <rect
+            x="96"
+            y="155"
+            width="168"
+            height="60"
+            rx="3"
+            fill="#f2e7cf"
+            stroke="#171210"
+            strokeWidth="2.5"
+          />
+          {/* zellij inlay */}
+          <rect x="96" y="155" width="168" height="60" fill="url(#zellij)" opacity="0.9" />
+          {/* framed cartouche around monogram */}
+          <rect
+            x="148"
+            y="166"
+            width="64"
+            height="42"
+            rx="4"
+            fill="#f2e7cf"
+            stroke="#171210"
+            strokeWidth="1.5"
+          />
+          <rect
+            x="151"
+            y="169"
+            width="58"
+            height="36"
+            rx="3"
+            fill="none"
+            stroke="#e8b339"
+            strokeWidth="1"
+            opacity="0.8"
+          />
+          {/* gold "L" monogram */}
+          <text
+            x="180"
+            y="203"
+            textAnchor="middle"
+            fontSize="44"
+            fontWeight="900"
+            fill="url(#goldShine)"
+            stroke="#171210"
+            strokeWidth="1.3"
+            fontFamily="var(--font-fraunces), serif"
+            fontStyle="italic"
+          >
+            L
+          </text>
+          {/* cobalt drip */}
+          <path
+            d="M 96 148
+               L 264 148
+               L 264 156
+               Q 254.5 166 245 156
+               Q 235.5 166 226 156
+               Q 216.5 166 207 156
+               Q 197.5 166 188 156
+               Q 178.5 166 169 156
+               Q 159.5 166 150 156
+               Q 140.5 166 131 156
+               Q 121.5 166 112 156
+               Q 102.5 166 96 156 Z"
+            fill="#2844c2"
+            stroke="#171210"
+            strokeWidth="2.5"
+            strokeLinejoin="round"
+          />
+          {/* drip tears */}
+          <path d="M 131 156 Q 125 168 131 178 Q 137 168 131 156 Z" fill="#2844c2" stroke="#171210" strokeWidth="2" strokeLinejoin="round" />
+          <path d="M 207 156 Q 200 170 207 182 Q 214 170 207 156 Z" fill="#2844c2" stroke="#171210" strokeWidth="2" strokeLinejoin="round" />
+          {/* drip highlight */}
+          <path d="M 105 151 L 110 158 M 170 151 L 175 158 M 240 151 L 245 158" stroke="#8fa3ff" strokeWidth="1.2" opacity="0.55" strokeLinecap="round" />
+          {/* pearl border */}
+          <rect x="96" y="211" width="168" height="5" fill="url(#pearlsDark)" opacity="0.95" />
+        </g>
+
+        {/* === TOP TIER — saffron body, oxblood drip === */}
+        <g>
+          <rect
+            x="126"
+            y="100"
+            width="108"
+            height="55"
+            rx="3"
+            fill="#e8b339"
+            stroke="#171210"
+            strokeWidth="2.5"
+          />
+          {/* gold ribbon */}
+          <rect x="126" y="128" width="108" height="6" fill="#b88318" opacity="0.55" />
+          <path d="M 130 134 L 136 139 L 140 134 Z" fill="#b88318" opacity="0.7" />
+          <path d="M 224 134 L 218 139 L 214 134 Z" fill="#b88318" opacity="0.7" />
+          {/* star dots */}
+          <circle cx="150" cy="145" r="1.3" fill="#171210" opacity="0.45" />
+          <circle cx="180" cy="148" r="1.3" fill="#171210" opacity="0.45" />
+          <circle cx="210" cy="145" r="1.3" fill="#171210" opacity="0.45" />
+          {/* scalloped drip (oxblood) */}
+          <path
+            d="M 126 93
+               L 234 93
+               L 234 101
+               Q 226 111 218 101
+               Q 210 111 202 101
+               Q 194 111 186 101
+               Q 178 111 170 101
+               Q 162 111 154 101
+               Q 146 111 138 101
+               Q 130 109 126 101 Z"
+            fill="#b02a25"
+            stroke="#171210"
+            strokeWidth="2.5"
+            strokeLinejoin="round"
+          />
+          {/* drip tears */}
+          <path d="M 154 101 Q 149 112 154 122 Q 159 112 154 101 Z" fill="#b02a25" stroke="#171210" strokeWidth="2" strokeLinejoin="round" />
+          <path d="M 202 101 Q 197 112 202 122 Q 207 112 202 101 Z" fill="#b02a25" stroke="#171210" strokeWidth="2" strokeLinejoin="round" />
+          {/* pearl border */}
+          <rect x="126" y="151" width="108" height="5" fill="url(#pearls)" opacity="0.95" />
+        </g>
+
+        {/* === CANDLES === tapered, with spiral stripes and wax drips === */}
+        {candleX.map((x, i) => (
+          <g key={i} onClick={() => onTapCandle(i)} className="cursor-pointer">
             {/* wick */}
-            <line x1="160" y1="54" x2="160" y2="62" stroke="#171210" strokeWidth="2" />
-            {/* candle body */}
-            <rect
-              x="154"
-              y="62"
-              width="12"
-              height="22"
-              fill={i % 2 === 0 ? "#2844c2" : "#b02a25"}
+            <line x1={x} y1={WICK_TOP} x2={x} y2={CANDLE_TOP} stroke="#171210" strokeWidth="2.2" strokeLinecap="round" />
+            {/* candle body (tapered trapezoid) */}
+            <path
+              d={`M ${x - 4.5},${CANDLE_BOTTOM} L ${x - 3.5},${CANDLE_TOP} L ${x + 3.5},${CANDLE_TOP} L ${x + 4.5},${CANDLE_BOTTOM} Z`}
+              fill={CANDLE_COLORS[i % CANDLE_COLORS.length]}
               stroke="#171210"
-              strokeWidth="2"
-              onClick={() => onTapCandle(i)}
-              className="cursor-pointer"
+              strokeWidth="1.8"
+              strokeLinejoin="round"
             />
-            {/* stripe */}
-            <line x1="154" y1="70" x2="166" y2="70" stroke="#f2e7cf" strokeWidth="1.5" />
-            <line x1="154" y1="76" x2="166" y2="76" stroke="#f2e7cf" strokeWidth="1.5" />
+            {/* spiral stripes */}
+            <path
+              d={`M ${x - 4},${CANDLE_BOTTOM - 6} Q ${x},${CANDLE_BOTTOM - 9} ${x + 4},${CANDLE_BOTTOM - 6}
+                  M ${x - 4},${CANDLE_BOTTOM - 16} Q ${x},${CANDLE_BOTTOM - 19} ${x + 4},${CANDLE_BOTTOM - 16}
+                  M ${x - 3.8},${CANDLE_BOTTOM - 26} Q ${x},${CANDLE_BOTTOM - 29} ${x + 3.8},${CANDLE_BOTTOM - 26}
+                  M ${x - 3.6},${CANDLE_BOTTOM - 36} Q ${x},${CANDLE_BOTTOM - 38} ${x + 3.6},${CANDLE_BOTTOM - 36}`}
+              fill="none"
+              stroke="#f2e7cf"
+              strokeWidth="1.3"
+              opacity="0.9"
+              strokeLinecap="round"
+            />
+            {/* wax drip on rim */}
+            <path
+              d={`M ${x + 3.5},${CANDLE_TOP + 1} L ${x + 3.5},${CANDLE_TOP + 5} Q ${x + 4.5},${CANDLE_TOP + 7} ${x + 3.2},${CANDLE_TOP + 5}`}
+              fill={CANDLE_COLORS[i % CANDLE_COLORS.length]}
+              opacity="0.7"
+              strokeWidth="0"
+            />
           </g>
         ))}
+
+        {/* Decorative piped rosettes between tiers */}
+        <g opacity="0.95">
+          {/* bottom of top tier rosettes */}
+          <circle cx="130" cy="154" r="2.8" fill="#f2e7cf" stroke="#171210" strokeWidth="1" />
+          <circle cx="230" cy="154" r="2.8" fill="#f2e7cf" stroke="#171210" strokeWidth="1" />
+          {/* bottom of middle tier rosettes */}
+          <circle cx="100" cy="214" r="3" fill="#e8b339" stroke="#171210" strokeWidth="1" />
+          <circle cx="260" cy="214" r="3" fill="#e8b339" stroke="#171210" strokeWidth="1" />
+        </g>
       </svg>
 
-      {/* Flames (HTML for animation) */}
-      {candlePositions.map((x, i) => {
-        const relX = (x / 320) * 100;
+      {/* Flames (HTML for flicker animation) */}
+      {candleX.map((x, i) => {
+        const relX = (x / VB_W) * 100;
+        const relY = (WICK_TOP / VB_H) * 100;
         return (
           <AnimatePresence key={i}>
             {lit[i] && (
               <motion.button
                 aria-label={`candle ${i + 1}`}
                 onClick={() => onTapCandle(i)}
-                initial={{ opacity: 0, y: 8, scale: 0.6 }}
+                initial={{ opacity: 0, y: 10, scale: 0.5 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -14, scale: 0.2, transition: { duration: 0.25 } }}
+                exit={{ opacity: 0, y: -16, scale: 0.2, transition: { duration: 0.28 } }}
+                transition={{ type: "spring", stiffness: 220, damping: 14 }}
                 className="absolute flex -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center p-4"
-                style={{ left: `${relX}%`, top: "13%" }}
+                style={{ left: `${relX}%`, top: `${relY}%` }}
               >
                 <div className="relative flicker">
-                  <div className="h-5 w-3.5 rounded-t-full bg-gradient-to-t from-[color:var(--color-oxblood)] via-[color:var(--color-saffron)] to-[color:var(--color-paper)] shadow-[0_0_14px_rgba(232,179,57,0.7)] sm:h-4 sm:w-3" />
-                  <div className="absolute -inset-2 -z-10 rounded-full bg-[color:var(--color-saffron)] opacity-30 blur-md" />
+                  <div className="h-5 w-3.5 rounded-t-full bg-gradient-to-t from-[color:var(--color-oxblood)] via-[color:var(--color-saffron)] to-[color:var(--color-paper)] shadow-[0_0_14px_rgba(232,179,57,0.8)] sm:h-[18px] sm:w-3" />
+                  <div className="absolute -inset-2.5 -z-10 rounded-full bg-[color:var(--color-saffron)] opacity-35 blur-md" />
                 </div>
               </motion.button>
             )}
@@ -339,16 +563,22 @@ function Cake({
         );
       })}
 
-      {/* smoke puff */}
-      {lit.some((l, i) => !l && i === lit.lastIndexOf(false)) && (
-        <motion.div
-          key={`smoke-${lit.filter((l) => !l).length}`}
-          initial={{ opacity: 0.8, y: 0 }}
-          animate={{ opacity: 0, y: -40 }}
-          transition={{ duration: 1.4 }}
-          className="pointer-events-none absolute top-[8%] left-1/2 h-5 w-5 -translate-x-1/2 rounded-full bg-[color:var(--color-ink)]/25 blur-md"
-        />
-      )}
+      {/* smoke puffs — one per recently-blown candle */}
+      {lit.map((l, i) => {
+        if (l) return null;
+        const relX = (candleX[i] / VB_W) * 100;
+        const relY = (WICK_TOP / VB_H) * 100;
+        return (
+          <motion.div
+            key={`smoke-${i}-${l ? 1 : 0}`}
+            initial={{ opacity: 0.6, y: 0, scale: 0.6 }}
+            animate={{ opacity: 0, y: -50, scale: 1.3 }}
+            transition={{ duration: 1.6, ease: "easeOut" }}
+            className="pointer-events-none absolute h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[color:var(--color-ink)]/35 blur-md"
+            style={{ left: `${relX}%`, top: `${relY}%` }}
+          />
+        );
+      })}
     </div>
   );
 }
