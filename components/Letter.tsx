@@ -4,15 +4,16 @@ import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "motion/react";
 
 const PARAGRAPHS = [
-  "it is the twenty-second of april and you are twenty years old and somewhere the world is paying attention, even if it doesn't know it.",
+  "Lina — it's the twenty-second of april and you are twenty years old and somewhere the world is paying attention, even if it doesn't know it yet.",
   "i wanted to build you something that can't be bought. no box, no ribbon — just a page that remembers today.",
   "thank you for being patient with me, for laughing at jokes that weren't funny yet, for the way you squint when you read things you don't fully trust.",
+  "watching you play ball is still one of my favorite things — the focus you get, the way the court gets smaller when you're on it. i'd show up to every game just to see that.",
   "here's to the rest of the year, and all the ordinary tuesdays we'll manage to make feel like something.",
   "kanbghik — more every day, even when i'm bad at saying it. te amo. i love you. all of the above, and in that order.",
 ];
 
 const SIGN_OFF = "— yours,";
-const NAME = "ashinno"; // ← change to your name
+const NAME = "Ash";
 
 export default function Letter() {
   const ref = useRef<HTMLDivElement>(null);
@@ -40,17 +41,17 @@ export default function Letter() {
   }, [inView, shown, typed]);
 
   return (
-    <section ref={ref} className="relative overflow-hidden border-b-2 border-[color:var(--color-ink)] bg-[color:var(--color-paper)] py-28">
+    <section ref={ref} className="relative overflow-hidden border-b-2 border-[color:var(--color-ink)] bg-[color:var(--color-paper)] py-20 sm:py-28">
       <div className="pointer-events-none absolute -top-10 left-10 h-40 w-40 rounded-full bg-[color:var(--color-oxblood)] opacity-15 blur-2xl" />
       <div className="pointer-events-none absolute bottom-0 right-10 h-56 w-56 rounded-full bg-[color:var(--color-cobalt)] opacity-15 blur-2xl" />
 
-      <div className="mx-auto max-w-3xl px-6 sm:px-10">
-        <p className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.3em] text-[color:var(--color-moss)]">
+      <div className="mx-auto max-w-3xl px-4 sm:px-10">
+        <p className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.28em] text-[color:var(--color-moss)] sm:text-[11px] sm:tracking-[0.3em]">
           act iii — the letter
         </p>
 
         {/* paper */}
-        <div className="relative mt-6 rounded-[28px] border-2 border-[color:var(--color-ink)] bg-[color:var(--color-paper-dark)] p-8 shadow-[10px_10px_0_0_var(--color-oxblood)] sm:p-12">
+        <div className="relative mt-5 rounded-[22px] border-2 border-[color:var(--color-ink)] bg-[color:var(--color-paper-dark)] p-6 shadow-[8px_8px_0_0_var(--color-oxblood)] sm:mt-6 sm:rounded-[28px] sm:p-12">
           {/* ruled lines */}
           <div
             className="pointer-events-none absolute inset-0 rounded-[28px] opacity-25"
@@ -66,7 +67,7 @@ export default function Letter() {
               <span>to · you</span>
             </div>
 
-            <div className="font-[family-name:var(--font-display)] text-xl leading-[1.55] sm:text-2xl" style={{ fontVariationSettings: "'SOFT' 40" }}>
+            <div className="font-[family-name:var(--font-display)] text-base leading-[1.55] sm:text-2xl" style={{ fontVariationSettings: "'SOFT' 40" }}>
               {PARAGRAPHS.slice(0, shown).map((p, i) => (
                 <p key={i} className="mb-5">{p}</p>
               ))}

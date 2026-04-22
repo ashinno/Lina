@@ -10,12 +10,12 @@ const SECRETS = [
   "you make ordinary days feel like festivals",
   "kanbghik bezzaf · كنبغيك بزاف",
   "twenty looks stupidly good on you",
-  "i would pick you again, every time",
+  "watching you play ball is unreasonably attractive",
   "your voice = my favorite sound",
   "small reminder: you are the whole plot",
   "mint tea, you, a long afternoon — all i need",
   "you + me, a very small universe",
-  "ntiya gamra dyali (my moon)",
+  "ntiya gamra dyali · you're my moon",
 ];
 
 const PALETTE = ["#b02a25", "#2844c2", "#e8b339", "#f4a48a", "#4a6a3a"];
@@ -51,30 +51,30 @@ export default function Balloons() {
 
   return (
     <section className="relative overflow-hidden border-b-2 border-[color:var(--color-ink)] bg-[color:var(--color-paper)]">
-      <div className="mx-auto max-w-6xl px-6 py-20 sm:px-10">
-        <div className="flex flex-wrap items-end justify-between gap-6">
+      <div className="mx-auto max-w-6xl px-4 py-16 sm:px-10 sm:py-20">
+        <div className="flex flex-wrap items-end justify-between gap-4 sm:gap-6">
           <div>
-            <p className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.3em] text-[color:var(--color-oxblood)]">
+            <p className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.28em] text-[color:var(--color-oxblood)] sm:text-[11px] sm:tracking-[0.3em]">
               act i — catch them all
             </p>
-            <h2 className="mt-3 font-[family-name:var(--font-display)] text-5xl italic sm:text-6xl" style={{ fontVariationSettings: "'SOFT' 80" }}>
+            <h2 className="mt-3 font-[family-name:var(--font-display)] text-4xl italic leading-[0.95] sm:text-6xl" style={{ fontVariationSettings: "'SOFT' 80" }}>
               pop a balloon,<br />steal a secret.
             </h2>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="rounded-full border-2 border-[color:var(--color-ink)] px-4 py-2 font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.22em]">
-              popped · <span className="text-[color:var(--color-oxblood)]">{count}</span> / {SECRETS.length}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="rounded-full border-2 border-[color:var(--color-ink)] px-3 py-1.5 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.2em] sm:px-4 sm:py-2 sm:text-xs">
+              <span className="text-[color:var(--color-oxblood)]">{count}</span> / {SECRETS.length}
             </div>
             <button
               onClick={reset}
-              className="press rounded-full border-2 border-[color:var(--color-ink)] bg-[color:var(--color-ink)] px-4 py-2 font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.22em] text-[color:var(--color-paper)]"
+              className="press rounded-full border-2 border-[color:var(--color-ink)] bg-[color:var(--color-ink)] px-3 py-1.5 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.2em] text-[color:var(--color-paper)] sm:px-4 sm:py-2 sm:text-xs"
             >
               refill ↺
             </button>
           </div>
         </div>
 
-        <div className="relative mt-12 h-[520px] w-full overflow-hidden rounded-3xl border-2 border-dashed border-[color:var(--color-ink)]/30">
+        <div className="relative mt-8 h-[440px] w-full overflow-hidden rounded-2xl border-2 border-dashed border-[color:var(--color-ink)]/30 sm:mt-12 sm:h-[520px] sm:rounded-3xl">
           {/* faint halftone field */}
           <div className="halftone absolute inset-0 opacity-10" />
 
@@ -113,9 +113,9 @@ export default function Balloons() {
                 exit={{ opacity: 0, y: -20 }}
                 className="pointer-events-none absolute inset-0 flex items-center justify-center px-6"
               >
-                <div className="max-w-md rounded-2xl border-2 border-[color:var(--color-ink)] bg-[color:var(--color-saffron)] px-6 py-4 text-center shadow-[6px_6px_0_0_var(--color-ink)]">
-                  <p className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.3em]">secret #{popped.id + 1}</p>
-                  <p className="mt-1 font-[family-name:var(--font-display)] text-2xl italic leading-tight">
+                <div className="max-w-sm rounded-2xl border-2 border-[color:var(--color-ink)] bg-[color:var(--color-saffron)] px-5 py-3 text-center shadow-[5px_5px_0_0_var(--color-ink)] sm:max-w-md sm:px-6 sm:py-4 sm:shadow-[6px_6px_0_0_var(--color-ink)]">
+                  <p className="font-[family-name:var(--font-mono)] text-[9px] uppercase tracking-[0.28em] sm:text-[10px] sm:tracking-[0.3em]">secret #{popped.id + 1}</p>
+                  <p className="mt-1 font-[family-name:var(--font-display)] text-xl italic leading-tight sm:text-2xl">
                     “{popped.secret}”
                   </p>
                 </div>

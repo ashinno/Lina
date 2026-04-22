@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import Confetti from "./Confetti";
 
-const NAME = "Habibti"; // ← change to her name
+const NAME = "Lina";
 const AGE = 20;
 
 const CANDLE_COUNT = 5;
@@ -18,15 +18,21 @@ export default function Hero() {
   const analyserRef = useRef<AnalyserNode | null>(null);
   const rafRef = useRef<number | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const shownOnceRef = useRef(false);
 
   const allOut = lit.every((l) => !l);
 
+  // Fire the celebration exactly once per "all candles out" run.
+  // Without this guard, closing the overlay while allOut is still true
+  // would re-trigger the effect and the overlay would pop back up.
   useEffect(() => {
-    if (allOut && !celebrate) {
-      const t = setTimeout(() => setCelebrate(true), 250);
+    if (allOut && !shownOnceRef.current) {
+      shownOnceRef.current = true;
+      const t = setTimeout(() => setCelebrate(true), 300);
       return () => clearTimeout(t);
     }
-  }, [allOut, celebrate]);
+    if (!allOut) shownOnceRef.current = false;
+  }, [allOut]);
 
   const blowOne = useCallback(() => {
     setLit((prev) => {
@@ -104,38 +110,60 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative min-h-screen w-full overflow-hidden px-6 pt-6 pb-24 sm:px-10">
+    <section className="relative min-h-screen w-full overflow-hidden px-4 pt-5 pb-16 sm:px-10 sm:pt-6 sm:pb-24">
       {/* decorative border */}
-      <div className="pointer-events-none absolute inset-4 rounded-[28px] border-2 border-dashed border-[color:var(--color-ink)]/25" />
+      <div className="pointer-events-none absolute inset-2 rounded-[22px] border-2 border-dashed border-[color:var(--color-ink)]/25 sm:inset-4 sm:rounded-[28px]" />
 
       {/* top bar */}
-      <div className="relative z-10 flex items-center justify-between font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.2em] text-[color:var(--color-ink)]/70">
-        <span>Édition №20 · Private Press</span>
-        <span className="hidden sm:inline">22 · IV · MMXXVI</span>
-        <span>Issue of One (1)</span>
+      <div className="relative z-10 flex items-center justify-between font-[family-name:var(--font-mono)] text-[9px] uppercase tracking-[0.18em] text-[color:var(--color-ink)]/70 sm:text-[11px] sm:tracking-[0.2em]">
+        <span>Édition №20</span>
+        <span>for Lina · from Ash</span>
+        <span className="hidden sm:inline">one of one</span>
       </div>
 
       {/* title */}
-      <div className="relative z-10 mt-10 sm:mt-14 flex flex-col items-center text-center">
+      <div className="relative z-10 mt-8 flex flex-col items-center text-center sm:mt-14">
         <span className="stamp wobble text-[10px]">a love letter in four acts</span>
 
-        <h1 className="mt-6 font-[family-name:var(--font-display)] leading-[0.82] tracking-tight">
-          <span className="block text-[clamp(2.25rem,7vw,5.5rem)] italic text-[color:var(--color-ink)]/80" style={{ fontVariationSettings: "'SOFT' 100, 'opsz' 144" }}>
+        <h1 className="mt-5 font-[family-name:var(--font-display)] leading-[0.82] tracking-tight sm:mt-6">
+          <motion.span
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1, duration: 0.7 }}
+            className="block text-[clamp(2rem,7vw,5.5rem)] italic text-[color:var(--color-ink)]/80"
+            style={{ fontVariationSettings: "'SOFT' 100, 'opsz' 144" }}
+          >
             happy birthday,
-          </span>
-          <span className="mt-2 block text-[clamp(4.5rem,18vw,14rem)] font-black tracking-[-0.04em] text-[color:var(--color-oxblood)]" style={{ fontVariationSettings: "'SOFT' 0, 'opsz' 144" }}>
+          </motion.span>
+          <motion.span
+            initial={{ opacity: 0, y: 24, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ delay: 0.25, type: "spring", stiffness: 140, damping: 18 }}
+            className="mt-1 block text-[clamp(4.5rem,22vw,14rem)] font-black tracking-[-0.04em] text-[color:var(--color-oxblood)] sm:mt-2"
+            style={{ fontVariationSettings: "'SOFT' 0, 'opsz' 144" }}
+          >
             {NAME}
-          </span>
-          <span className="-mt-2 block font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.5em] text-[color:var(--color-ink)]/60">
-            born twenty years ago · today
-          </span>
+          </motion.span>
+          <motion.span
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.55, duration: 0.6 }}
+            className="mt-1 block font-[family-name:var(--font-mono)] text-[9px] uppercase tracking-[0.35em] text-[color:var(--color-ink)]/60 sm:text-[11px] sm:tracking-[0.5em]"
+          >
+            twenty · ‘20 · عشرون
+          </motion.span>
         </h1>
 
         {/* Cake */}
-        <div className="relative mt-12 w-full max-w-xl">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.75, duration: 0.7, ease: [0.2, 0.8, 0.2, 1] }}
+          className="relative mt-10 w-full max-w-xl sm:mt-12"
+        >
           <Cake lit={lit} age={AGE} onTapCandle={(i) => setLit((p) => p.map((v, k) => (k === i ? false : v)))} />
           {/* Mic meter */}
-          <div className="mx-auto mt-6 w-full max-w-sm">
+          <div className="mx-auto mt-5 w-full max-w-sm px-2 sm:mt-6">
             <div className="h-2 w-full overflow-hidden rounded-full bg-[color:var(--color-paper-dark)]">
               <motion.div
                 className="h-full rounded-full bg-[color:var(--color-oxblood)]"
@@ -144,47 +172,47 @@ export default function Hero() {
               />
             </div>
             <p className="mt-2 text-center font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.22em] text-[color:var(--color-ink)]/60">
-              {micActive ? "blow into the mic →" : "turn on the mic, or tap each candle"}
+              {micActive ? "blow into the mic →" : "tap the candles, or use the mic"}
             </p>
           </div>
-        </div>
+        </motion.div>
 
         {/* Controls */}
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+        <div className="mt-7 flex w-full max-w-md flex-wrap items-center justify-center gap-2.5 sm:mt-8 sm:gap-3">
+          <button
+            onClick={blowOne}
+            disabled={allOut}
+            className="press rounded-full border-2 border-[color:var(--color-oxblood)] bg-[color:var(--color-oxblood)] px-5 py-2.5 font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.2em] text-[color:var(--color-paper)] disabled:opacity-30 sm:px-6 sm:py-3 sm:text-xs"
+          >
+            blow one
+          </button>
           {!micActive ? (
             <button
               onClick={startMic}
-              className="press rounded-full border-2 border-[color:var(--color-ink)] bg-[color:var(--color-ink)] px-6 py-3 font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.2em] text-[color:var(--color-paper)] hover:bg-[color:var(--color-oxblood)] hover:border-[color:var(--color-oxblood)]"
+              className="press rounded-full border-2 border-[color:var(--color-ink)] bg-[color:var(--color-paper)] px-5 py-2.5 font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.2em] sm:px-6 sm:py-3 sm:text-xs"
             >
-              🎤 let me blow the candles
+              🎤 use mic
             </button>
           ) : (
             <button
               onClick={stopMic}
-              className="press rounded-full border-2 border-[color:var(--color-ink)] px-6 py-3 font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.2em]"
+              className="press rounded-full border-2 border-[color:var(--color-ink)] bg-[color:var(--color-ink)] px-5 py-2.5 font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.2em] text-[color:var(--color-paper)] sm:px-6 sm:py-3 sm:text-xs"
             >
               stop mic
             </button>
           )}
-          <button
-            onClick={blowOne}
-            disabled={allOut}
-            className="press rounded-full border-2 border-[color:var(--color-oxblood)] bg-[color:var(--color-paper)] px-6 py-3 font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.2em] text-[color:var(--color-oxblood)] disabled:opacity-30"
-          >
-            blow (click)
-          </button>
           {allOut && (
             <button
               onClick={relight}
-              className="press rounded-full border-2 border-[color:var(--color-cobalt)] px-6 py-3 font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.2em] text-[color:var(--color-cobalt)]"
+              className="press rounded-full border-2 border-[color:var(--color-cobalt)] bg-[color:var(--color-paper)] px-5 py-2.5 font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.2em] text-[color:var(--color-cobalt)] sm:px-6 sm:py-3 sm:text-xs"
             >
-              relight
+              relight ↺
             </button>
           )}
         </div>
         {!micReady && micActive === false && (
-          <p className="mt-3 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.2em] text-[color:var(--color-ink)]/50">
-            if mic doesn&apos;t work on your phone, just tap the candles
+          <p className="mt-3 max-w-xs font-[family-name:var(--font-mono)] text-[9px] uppercase tracking-[0.2em] text-[color:var(--color-ink)]/50 sm:text-[10px]">
+            on safari/ios, tap &ldquo;use mic&rdquo; and allow access — or just tap candles
           </p>
         )}
       </div>
@@ -298,11 +326,11 @@ function Cake({
                 initial={{ opacity: 0, y: 8, scale: 0.6 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -14, scale: 0.2, transition: { duration: 0.25 } }}
-                className="absolute -translate-x-1/2 cursor-pointer"
+                className="absolute flex -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center p-4"
                 style={{ left: `${relX}%`, top: "13%" }}
               >
                 <div className="relative flicker">
-                  <div className="h-4 w-3 rounded-t-full bg-gradient-to-t from-[color:var(--color-oxblood)] via-[color:var(--color-saffron)] to-[color:var(--color-paper)] shadow-[0_0_14px_rgba(232,179,57,0.7)]" />
+                  <div className="h-5 w-3.5 rounded-t-full bg-gradient-to-t from-[color:var(--color-oxblood)] via-[color:var(--color-saffron)] to-[color:var(--color-paper)] shadow-[0_0_14px_rgba(232,179,57,0.7)] sm:h-4 sm:w-3" />
                   <div className="absolute -inset-2 -z-10 rounded-full bg-[color:var(--color-saffron)] opacity-30 blur-md" />
                 </div>
               </motion.button>
@@ -332,38 +360,101 @@ function CelebrationOverlay({ onClose }: { onClose: () => void }) {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[color:var(--color-ink)]/55 px-6"
+      exit={{ opacity: 0, transition: { duration: 0.25 } }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[color:var(--color-ink)]/60 px-5 backdrop-blur-sm"
       onClick={onClose}
+      role="dialog"
+      aria-modal="true"
     >
       <motion.div
-        initial={{ y: 40, rotate: -2, scale: 0.9 }}
+        initial={{ y: 48, rotate: -3, scale: 0.88 }}
         animate={{ y: 0, rotate: -1, scale: 1 }}
-        exit={{ y: 40, opacity: 0 }}
-        transition={{ type: "spring", stiffness: 200, damping: 18 }}
+        exit={{ y: 30, opacity: 0, scale: 0.95, transition: { duration: 0.22 } }}
+        transition={{ type: "spring", stiffness: 220, damping: 20 }}
         onClick={(e) => e.stopPropagation()}
-        className="relative max-w-lg rounded-3xl border-2 border-[color:var(--color-ink)] bg-[color:var(--color-paper)] p-10 text-center shadow-[12px_12px_0_0_var(--color-oxblood)]"
+        className="relative w-full max-w-md rounded-[28px] border-2 border-[color:var(--color-ink)] bg-[color:var(--color-paper)] p-7 text-center shadow-[10px_10px_0_0_var(--color-oxblood)] sm:max-w-lg sm:p-10"
       >
-        <div className="stamp mx-auto mb-4 text-[10px]">wish registered ✓</div>
-        <h2 className="font-[family-name:var(--font-display)] text-5xl text-[color:var(--color-oxblood)]" dir="rtl" lang="ar">
-          عيد ميلاد سعيد
-        </h2>
-        <p className="mt-3 font-[family-name:var(--font-display)] text-2xl italic" style={{ fontVariationSettings: "'SOFT' 100" }}>
-          sana sa‘ida · feliz cumpleaños · happy birthday
-        </p>
-        <p className="mt-4 font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.25em] text-[color:var(--color-ink)]/70">
-          wish captured at {new Date().toLocaleTimeString()}
-        </p>
-        <p className="mt-6 font-[family-name:var(--font-display)] text-lg italic">
-          keep scrolling — the rest is waiting.
-        </p>
+        {/* bouncing basketball */}
+        <motion.div
+          initial={{ y: -80, rotate: 0 }}
+          animate={{ y: [0, -18, 0, -8, 0], rotate: [0, 180, 360] }}
+          transition={{ y: { duration: 1.4, delay: 0.2, times: [0, 0.3, 0.55, 0.78, 1] }, rotate: { duration: 1.4, delay: 0.2 } }}
+          className="mx-auto mb-2 h-14 w-14"
+          aria-hidden
+        >
+          <Basketball />
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.35 }}
+          className="stamp mx-auto text-[10px]"
+        >
+          wish registered ✓
+        </motion.div>
+
+        <motion.h2
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, type: "spring", stiffness: 160, damping: 16 }}
+          className="mt-4 font-[family-name:var(--font-display)] text-4xl text-[color:var(--color-oxblood)] sm:text-5xl"
+          dir="rtl"
+          lang="ar"
+        >
+          عيد ميلاد سعيد يا لينا
+        </motion.h2>
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.7 }}
+          className="mt-3 font-[family-name:var(--font-display)] text-xl italic sm:text-2xl"
+          style={{ fontVariationSettings: "'SOFT' 100" }}
+        >
+          happy birthday, Lina.
+        </motion.p>
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.9 }}
+          className="mt-4 font-[family-name:var(--font-display)] text-base italic text-[color:var(--color-ink)]/80 sm:text-lg"
+        >
+          keep scrolling — the rest is waiting for you.
+        </motion.p>
+
+        <motion.button
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.05 }}
+          onClick={onClose}
+          className="press mt-7 rounded-full border-2 border-[color:var(--color-ink)] bg-[color:var(--color-ink)] px-7 py-3 font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.22em] text-[color:var(--color-paper)] hover:bg-[color:var(--color-oxblood)] hover:border-[color:var(--color-oxblood)]"
+        >
+          continue ↓
+        </motion.button>
+
+        {/* close (x) for mobile clarity */}
         <button
           onClick={onClose}
-          className="press mt-8 rounded-full border-2 border-[color:var(--color-ink)] bg-[color:var(--color-ink)] px-6 py-2 font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.22em] text-[color:var(--color-paper)]"
+          aria-label="close"
+          className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full border-2 border-[color:var(--color-ink)] bg-[color:var(--color-paper)] font-[family-name:var(--font-mono)] text-xs hover:bg-[color:var(--color-ink)] hover:text-[color:var(--color-paper)]"
         >
-          continue →
+          ✕
         </button>
       </motion.div>
     </motion.div>
+  );
+}
+
+function Basketball() {
+  return (
+    <svg viewBox="0 0 56 56" className="h-full w-full drop-shadow-[3px_3px_0_rgba(23,18,16,0.7)]">
+      <circle cx="28" cy="28" r="24" fill="#e06a2a" stroke="#171210" strokeWidth="2.5" />
+      <path d="M4 28 H 52" stroke="#171210" strokeWidth="2" fill="none" />
+      <path d="M28 4 V 52" stroke="#171210" strokeWidth="2" fill="none" />
+      <path d="M10 10 Q 28 28 10 46" stroke="#171210" strokeWidth="2" fill="none" />
+      <path d="M46 10 Q 28 28 46 46" stroke="#171210" strokeWidth="2" fill="none" />
+    </svg>
   );
 }
