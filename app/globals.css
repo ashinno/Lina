@@ -1,0 +1,109 @@
+@import "tailwindcss";
+
+@theme {
+  --color-paper: #f2e7cf;
+  --color-paper-dark: #e9dcbd;
+  --color-ink: #171210;
+  --color-oxblood: #b02a25;
+  --color-peach: #f4a48a;
+  --color-cobalt: #2844c2;
+  --color-saffron: #e8b339;
+  --color-moss: #4a6a3a;
+
+  --font-display: var(--font-fraunces);
+  --font-body: var(--font-dm-sans);
+  --font-mono: var(--font-dm-mono);
+}
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+body {
+  background-image:
+    radial-gradient(circle at 20% 10%, rgba(244, 164, 138, 0.35) 0%, transparent 42%),
+    radial-gradient(circle at 85% 35%, rgba(40, 68, 194, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 60% 90%, rgba(232, 179, 57, 0.2) 0%, transparent 45%);
+}
+
+/* Paper grain overlay */
+.grain::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 60;
+  opacity: 0.18;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.09 0 0 0 0 0.07 0 0 0 0 0.06 0 0 0 0.55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
+/* Halftone dots */
+.halftone {
+  background-image: radial-gradient(var(--color-ink) 1px, transparent 1.2px);
+  background-size: 9px 9px;
+}
+
+/* Hand-drawn wobble */
+@keyframes wobble {
+  0%, 100% { transform: rotate(-0.6deg) translateY(0); }
+  50% { transform: rotate(0.6deg) translateY(-1px); }
+}
+.wobble { animation: wobble 4.2s ease-in-out infinite; }
+
+/* Flicker */
+@keyframes flame-flicker {
+  0%, 100% { transform: scale(1) translateY(0); opacity: 1; }
+  50% { transform: scale(1.08, 0.94) translateY(-1px); opacity: 0.92; }
+}
+.flicker { animation: flame-flicker 180ms ease-in-out infinite; transform-origin: 50% 100%; }
+
+/* Marquee */
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.marquee { animation: marquee 32s linear infinite; }
+
+/* Underline squiggle */
+.squiggle {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 8'><path d='M0 4 Q 5 0 10 4 T 20 4 T 30 4 T 40 4' fill='none' stroke='%23b02a25' stroke-width='2'/></svg>");
+  background-repeat: repeat-x;
+  background-position: 0 100%;
+  background-size: 40px 8px;
+  padding-bottom: 10px;
+}
+
+/* Selection */
+::selection { background: var(--color-oxblood); color: var(--color-paper); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--color-paper-dark); }
+::-webkit-scrollbar-thumb { background: var(--color-ink); border: 2px solid var(--color-paper-dark); border-radius: 999px; }
+
+/* Button press */
+.press { transition: transform 120ms ease; }
+.press:active { transform: translateY(2px) scale(0.98); }
+
+/* Caret */
+.caret::after { content: "▍"; margin-left: 2px; animation: blink 0.9s steps(2) infinite; color: var(--color-oxblood); }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* Stamp */
+.stamp {
+  border: 2px solid var(--color-oxblood);
+  color: var(--color-oxblood);
+  padding: 4px 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-family: var(--font-mono);
+  transform: rotate(-6deg);
+  display: inline-block;
+  box-shadow: inset 0 0 0 2px var(--color-paper);
+}
